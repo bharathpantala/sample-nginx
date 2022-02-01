@@ -1,0 +1,39 @@
+---
+- hosts: web
+  become: true
+  tasks:
+  - name: "Install Nginx"
+    apt:
+        name: nginx
+        state: latest
+        update_cache: yes
+    notify:
+    - start-web
+
+  - name: "Copy The Weboages to Document Root"
+    copy:
+        src: "./index.html"
+        dest: "/var/www/html"
+    notify:
+    - restart-web
+
+  - name: Mesage
+    debug:
+     msg: "Successfull"
+
+  - name: Final restart
+    debug:
+      msg: Final Resatarting
+    notify:
+    - restart-web
+  handlers:
+  - name: start-web
+    service:
+        name: nginx
+        state: started
+        enabled: yes
+
+  - name: restart-web
+    service:
+        name: nginx
+        state: restarted
